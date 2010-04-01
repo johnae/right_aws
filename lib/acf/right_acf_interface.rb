@@ -81,7 +81,7 @@ module RightAws
     DEFAULT_PORT     = 443
     DEFAULT_PROTOCOL = 'https'
     DEFAULT_PATH     = '/'
-    DISTRIBUTION_RESOURCE = {'http' => 'distribution', 'streaming' => 'streaming-distribution']
+    DISTRIBUTION_RESOURCE = {'http' => 'distribution', 'streaming' => 'streaming-distribution'}
 
     @@bench = AwsBenchmarkingBlock.new
     def self.bench_xml
