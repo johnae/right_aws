@@ -76,7 +76,7 @@ module RightAws
     
     include RightAwsBaseInterface
 
-    API_VERSION      = "2009-04-02"
+    API_VERSION      = "2010-03-01"
     DEFAULT_HOST     = 'cloudfront.amazonaws.com'
     DEFAULT_PORT     = 443
     DEFAULT_PROTOCOL = 'https'
@@ -184,11 +184,11 @@ module RightAws
       end
       access_identity = ''
       unless config[:access_identity].blank?
-        access_identity_str += "\n          <OriginAccessIdentity>origin-access-identity/cloudfront/#{config[:access_identity].gsub('origin-access-identity/cloudfront/','')}</OriginAccessIdentity>"
+        access_identity += "\n          <OriginAccessIdentity>origin-access-identity/cloudfront/#{config[:access_identity].gsub('origin-access-identity/cloudfront/','')}</OriginAccessIdentity>"
       end
       trusted_signers = ''
       if config[:trusted_signers]
-        trusted_signers_str += "\n          <TrustedSigners><Self/></TrustedSigners>"
+        trusted_signers += "\n          <TrustedSigners><Self/></TrustedSigners>"
       end
       # logging
       logging = ''
@@ -378,6 +378,7 @@ module RightAws
 
     def create_distribution_by_config(config, type='http')
       config[:caller_reference] ||= generate_call_reference
+      puts config_to_xml(config, type)
       link = generate_request('POST', DISTRIBUTION_RESOURCE[type], {}, config_to_xml(config, type))
       merge_headers(request_info(link, AcfDistributionListParser.new(:logger => @logger))[:distributions].first)
     end
@@ -397,7 +398,7 @@ module RightAws
       create_identity_by_config(config)
     end
 
-    def create_distribution_by_config(config)
+    def create_identity_by_config(config)
       config[:caller_reference] ||= generate_call_reference
       link = generate_request('POST', 'origin-access-identity/cloudfront', {}, identity_config_to_xml(config))
       merge_headers(request_info(link, AcfOriginAccessIdentityListParser.new(:logger => @logger))[:identities].first)
@@ -606,7 +607,7 @@ module RightAws
           when 'MaxItems'    then @result[:max_items]    = @text.to_i
           when 'IsTruncated' then @result[:is_truncated] = @text == 'true' ? true : false
           when 'Id'                 then @identity[:aws_id]                 = @text
-          when 'S3CanonicalUserId'  then @identity[:s3_connonical_user_id]  = @text
+          when 'S3CanonicalUserId'  then @identity[:s3_canonical_user_id]  = @text
           when 'Comment'            then @identity[:comment]                = AcfInterface::unescape(@text)
           when 'CallerReference'    then @identity[:caller_reference]       = @text
         end
