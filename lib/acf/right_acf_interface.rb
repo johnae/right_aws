@@ -378,7 +378,6 @@ module RightAws
 
     def create_distribution_by_config(config, type='http')
       config[:caller_reference] ||= generate_call_reference
-      puts config_to_xml(config, type)
       link = generate_request('POST', DISTRIBUTION_RESOURCE[type], {}, config_to_xml(config, type))
       merge_headers(request_info(link, AcfDistributionListParser.new(:logger => @logger))[:distributions].first)
     end
